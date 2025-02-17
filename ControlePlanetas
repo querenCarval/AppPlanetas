@@ -1,0 +1,64 @@
+import 'package:myapp/Model/planeta.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart'; // Importação adicionada
+
+class ControlePlaneta {
+  // ignore: unused_field
+  static Database? _bd;
+
+  Future<Database> getDatabase() async {
+    final String path = join(await getDatabasesPath(), 'planeta.db');
+    return openDatabase(
+      path,
+      onCreate: (db, version) {
+        return db.execute(
+          'CREATE TABLE planeta(id INTEGER PRIMARY KEY, nome TEXT, tamanho REAL, distancia REAL)',
+        );
+      },
+      version: 1,
+    );
+  }
+
+  Future<int> salvarPlaneta(Map<String, dynamic> planeta) async {
+    final Database db = await getDatabase();
+    return db.insert('planeta', planeta);
+  }
+
+  Future<List<Map<String, dynamic>>> buscarTodosPlanetas() async {
+    final Database db = await getDatabase();
+    return db.query('planeta');
+  }
+
+  Future<int> atualizarPlaneta(Map<String, dynamic> planeta) async {
+    final Database db = await getDatabase();
+    return db.update(
+      'planeta',
+      planeta,
+      where: 'id = ?',
+      whereArgs: [planeta['id']],
+    );
+  }
+
+  Future<int> excluirPlaneta(int id) async {
+    final Database db = await getDatabase();
+    return db.delete(
+      'planeta', // Nome da tabela correto
+      where: 'id = ?', 
+      whereArgs: [id],
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> lerPlanetas() async {
+    final Database db = await getDatabase();
+    return db.query('planeta');
+  }
+
+  Future<int> inserirPlaneta(Map<String, dynamic> planeta) async {
+    final Database db = await getDatabase();
+    return db.insert('planeta', planeta);
+  }
+
+  incluirPlaneta(Planeta planeta) {}
+
+
+}
